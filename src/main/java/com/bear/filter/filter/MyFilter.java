@@ -2,13 +2,16 @@ package com.bear.filter.filter;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
 
 
 @Component
@@ -29,5 +32,17 @@ public class MyFilter extends OncePerRequestFilter {
         byte[] bytes1 = JSON.toJSONBytes(data);
         requestWrapper.setRequestBody(bytes1);
         filterChain.doFilter(requestWrapper, responseWrapper);
+
+        // 获取响应体
+        byte[] bytes2 = {110,111,112,113};
+        HashMap<String, String> map = new HashMap<>();
+        map.put("data", new String(bytes2));
+
+        response.setContentType("application/json;charset=utf-8");
+        // 必须设置长度
+        response.setContentLength(map.toString().getBytes().length);
+        response.getOutputStream().write(map.toString().getBytes());
+        response.getOutputStream().flush();
+
     }
 }
